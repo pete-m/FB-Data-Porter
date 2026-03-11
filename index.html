@@ -1,53 +1,47 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FB Data Porter | Peeker</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FB Data Porter | Peeker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-zinc-900 text-zinc-100 p-6 font-sans">
-    <div class="max-w-xl mx-auto border border-zinc-700 p-8 rounded-3xl bg-zinc-800 shadow-2xl">
-        <header class="mb-6 border-b border-zinc-700 pb-4 text-center text-blue-500">
-            <h1 class="text-3xl font-black italic tracking-tighter">PORTER v1.0</h1>
-            <p class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Privacy-First Data Migration</p>
-        </header>
-
-        <div class="mb-6 p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl text-[11px] text-amber-200 leading-relaxed italic">
-            <strong>Teething Troubles:</strong> This tool is brand new and experimental. If you encounter a 404 or a hang, please refresh. We are actively refining the engine.
-        </div>
-        
-        <input type="file" id="zipInput" accept=".zip,application/zip" class="block w-full text-sm text-zinc-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-colors mb-6 cursor-pointer">
-        
-        <div id="status" class="text-[10px] font-mono text-zinc-500 mb-4 italic uppercase text-center border-y border-zinc-800 py-2">System ready...</div>
-        <div id="output" class="space-y-2 max-h-80 overflow-y-auto font-mono text-[10px]"></div>
-    </div>
-
-    <script>
-        document.getElementById('zipInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            const status = document.getElementById('status');
-            const output = document.getElementById('output');
-            if(!file) return;
-            
-            status.innerText = "Decompressing & Mapping...";
-            try {
-                const zip = new JSZip();
-                const contents = await zip.loadAsync(file);
-                status.innerText = "Archive Map Generated:";
-                output.innerHTML = "";
-                Object.keys(contents.files).forEach(filename => {
-                    const isDir = filename.endsWith('/');
-                    const color = isDir ? 'text-blue-400' : 'text-zinc-400';
-                    output.innerHTML += `<div class="p-1 border-b border-zinc-800 ${color}">${filename}</div>`;
-                });
-            } catch (err) {
-                status.innerText = "Error: Invalid ZIP.";
-                output.innerHTML = `<p class="text-red-500">${err.message}</p>`;
-            }
-        });
-    </script>
+<div class="max-w-xl mx-auto border border-zinc-700 p-8 rounded-3xl bg-zinc-800 shadow-2xl">
+<header class="mb-6 border-b border-zinc-700 pb-4 text-center text-blue-500">
+<h1 class="text-3xl font-black italic tracking-tighter">PORTER v1.1</h1>
+<p class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Privacy-First Data Migration</p>
+</header>
+<div class="mb-6 p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl text-[11px] text-amber-200 leading-relaxed italic">
+<strong>Teething Troubles:</strong> This tool is experimental. If the file is greyed out, try the "Files" app instead of the Gallery.
+</div>
+<input type="file" id="zipInput" accept=".zip,application/zip,application/x-zip-compressed,application/octet-stream" class="block w-full text-sm text-zinc-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-colors mb-6 cursor-pointer">
+<div id="status" class="text-[10px] font-mono text-zinc-500 mb-4 italic uppercase text-center border-y border-zinc-800 py-2">System ready...</div>
+<div id="output" class="space-y-2 max-h-80 overflow-y-auto font-mono text-[10px]"></div>
+</div>
+<script>
+document.getElementById('zipInput').addEventListener('change', async (e) => {
+const file = e.target.files[0];
+const status = document.getElementById('status');
+const output = document.getElementById('output');
+if(!file) return;
+status.innerText = "Decompressing & Mapping...";
+try {
+const zip = new JSZip();
+const contents = await zip.loadAsync(file);
+status.innerText = "Archive Map Generated:";
+output.innerHTML = "";
+Object.keys(contents.files).forEach(filename => {
+const isDir = filename.endsWith('/');
+const color = isDir ? 'text-blue-400' : 'text-zinc-400';
+output.innerHTML += &lt;div class=&quot;p-1 border-b border-zinc-800 ${color}&quot;&gt;${filename}&lt;/div&gt;;
+});
+} catch (err) {
+status.innerText = "Error: Invalid ZIP.";
+output.innerHTML = &lt;p class=&quot;text-red-500&quot;&gt;${err.message}&lt;/p&gt;;
+}
+});
+</script>
 </body>
 </html>
