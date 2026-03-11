@@ -28,3 +28,38 @@
 </div>
 </body>
 </html>
+<script>
+let currentZip = null;
+document.getElementById('zipInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const status = document.getElementById('status');
+    if(!file) return;
+    status.innerText = "Mapping...";
+    try {
+        currentZip = await JSZip.loadAsync(file);
+        status.innerText = "Map Complete.";
+        document.getElementById('output').innerHTML = "";
+        Object.keys(currentZip.files).forEach(f => {
+            if(f.endsWith('/')) return;
+            const b = document.createElement('button');
+            b.className = "block w-full text-left p-1 border-b border-zinc-800 truncate";
+            b.innerText = f;
+            b.onclick = () => peek(f);
+            document.getElementById('output').appendChild(b);
+        });
+    } catch (err) { status.innerText = "Error: " + err.message; }
+});
+async function peek(name) {
+    const p = document.getElementById('preview');
+    try {
+        const c = await currentZip.file(name).async("string");
+        p.innerHTML = `<button onclick="nom('${name}')" class="mb-4 w-full bg-green-600 p-2 rounded-xl font-bold text-[10px]">NOMINATE</button><pre class="text-[9px]">${c}</pre>`;
+    } catch (e) { p.innerText = "Error: " + e.message; }
+}
+function nom(n) {
+    const b = document.getElementById('basket');
+    if(b.innerText.includes("Empty")) b.innerHTML = "";
+    b.innerHTML += `<div class="text-green-400 p-1 border-b border-zinc-800">✓ ${n}</div>`;
+}
+</script>
+
