@@ -3,103 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FB Data Porter | Nominating Engine</title>
+<title>Porter v1.2 | Shell</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-zinc-950 text-zinc-200 p-4 font-sans min-h-screen">
 <div class="max-w-2xl mx-auto space-y-4">
-    <header class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900 shadow-xl text-center">
-        <h1 class="text-3xl font-black italic tracking-tighter text-blue-500">PORTER v1.2</h1>
-        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Preview & Nomination Engine</p>
-    </header>
-
-    <div class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900 shadow-xl">
-        <div class="mb-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl text-[11px] text-amber-200 leading-relaxed italic">
-            <strong>Teething Troubles:</strong> If the file is greyed out or "Permission Denied" appears, please refresh the page and select the ZIP via your phone's "Files" app.
-        </div>
-        <input type="file" id="zipInput" accept=".zip,application/zip,application/x-zip-compressed,application/octet-stream" class="block w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-zinc-800 file:text-white mb-4 cursor-pointer">
-        <div id="status" class="text-[10px] font-mono text-zinc-500 italic uppercase text-center py-2 border-t border-zinc-800">Ready for Archive...</div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="border border-zinc-800 rounded-3xl bg-zinc-900 p-4">
-            <h2 class="text-[10px] uppercase font-bold text-zinc-500 mb-3 border-b border-zinc-800 pb-2">Archive Map</h2>
-            <div id="output" class="space-y-1 h-64 overflow-y-auto font-mono text-[10px]"></div>
-        </div>
-        <div class="border border-zinc-800 rounded-3xl bg-zinc-900 p-4">
-            <h2 class="text-[10px] uppercase font-bold text-blue-500 mb-3 border-b border-zinc-800 pb-2">Nomination Preview</h2>
-            <div id="preview" class="h-64 overflow-y-auto font-mono text-[10px] text-zinc-400 italic">Select a .json file to peek...</div>
-        </div>
-    </div>
-
-    <div class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900 shadow-xl">
-        <h2 class="text-[10px] uppercase font-bold text-green-500 mb-3">Nomination Basket</h2>
-        <div id="basket" class="text-[10px] text-zinc-500 italic">No items nominated yet.</div>
-    </div>
+<header class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900 text-center">
+<h1 class="text-3xl font-black italic text-blue-500">PORTER v1.2</h1>
+</header>
+<div class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900">
+<input type="file" id="zipInput" class="block w-full text-sm text-zinc-400 mb-4">
+<div id="status" class="text-[10px] font-mono text-zinc-500 text-center py-2 border-t border-zinc-800">Awaiting Motor...</div>
 </div>
-
-<script>
-let currentZip = null;
-
-document.getElementById('zipInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    const status = document.getElementById('status');
-    const output = document.getElementById('output');
-    if(!file) return;
-
-    status.innerText = "Mapping Fleet...";
-    try {
-        currentZip = await JSZip.loadAsync(file);
-        status.innerText = "Map Complete. Tap JSON to Preview.";
-        output.innerHTML = "";
-        
-        Object.keys(currentZip.files).forEach(filename => {
-            if(filename.endsWith('/')) return;
-            const btn = document.createElement('button');
-            btn.className = "block w-full text-left p-1 border-b border-zinc-800 hover:bg-zinc-800 truncate transition-colors";
-            btn.innerText = filename;
-            btn.onclick = () => peekFile(filename);
-            output.appendChild(btn);
-        });
-    } catch (err) {
-        status.innerText = "Error: Access Denied or Invalid ZIP.";
-        console.error(err);
-    }
-});
-
-async function peekFile(name) {
-    const preview = document.getElementById('preview');
-    preview.innerText = "Reading " + name + "...";
-    try {
-        const fileData = currentZip.file(name);
-        if (!fileData) throw new Error("File not found in archive.");
-        
-        const content = await fileData.async("string");
-        if (name.endsWith('.json')) {
-            try {
-                const data = JSON.parse(content);
-                preview.innerHTML = `<button onclick="nominate('${name}')" class="mb-4 w-full bg-green-600 text-white py-2 rounded-xl font-bold uppercase text-[10px] shadow-lg">Nominate for Extraction</button>`;
-                preview.innerHTML += `<pre class="whitespace-pre-wrap text-zinc-300 text-[9px]">${JSON.stringify(data, null, 2)}</pre>`;
-            } catch (jsonErr) {
-                preview.innerText = "File is not valid JSON.";
-            }
-        } else {
-            preview.innerText = "Preview only available for .json data.";
-        }
-    } catch (err) {
-        preview.innerText = "Could not preview: " + err.message;
-    }
-}
-
-function nominate(name) {
-    const basket = document.getElementById('basket');
-    if(basket.innerText.includes("No items")) basket.innerHTML = "";
-    const entry = document.createElement('div');
-    entry.className = "text-green-400 p-1 border-b border-zinc-800 flex justify-between items-center";
-    entry.innerHTML = `<span>✓ ${name}</span><span class="text-[8px] text-zinc-600">READY</span>`;
-    basket.appendChild(entry);
-}
-</script>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="border border-zinc-800 rounded-3xl bg-zinc-900 p-4">
+<div id="output" class="space-y-1 h-64 overflow-y-auto font-mono text-[10px]"></div>
+</div>
+<div class="border border-zinc-800 rounded-3xl bg-zinc-900 p-4">
+<div id="preview" class="h-64 overflow-y-auto font-mono text-[10px] text-zinc-400 italic">...</div>
+</div>
+</div>
+<div id="basket" class="border border-zinc-800 p-6 rounded-3xl bg-zinc-900 text-[10px] text-zinc-500 italic">Nomination Basket Empty</div>
+</div>
 </body>
 </html>
